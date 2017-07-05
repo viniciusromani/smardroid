@@ -142,6 +142,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
 
     private void onMapReadyAfterPermissionChecked() {
         try {
+            // map stuff
             map.setMyLocationEnabled(true);
         } catch (SecurityException se) {
             Log.d("MapFragment", "MapFragment - Security Exception");
