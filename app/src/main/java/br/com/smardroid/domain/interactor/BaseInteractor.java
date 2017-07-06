@@ -20,9 +20,8 @@ import com.annimon.stream.Stream;
 
 public abstract class BaseInteractor {
 
-    protected ThreadExecutor subscriberOn;
-    protected ThreadExecutor observerOn;
-
+    private ThreadExecutor subscriberOn;
+    private ThreadExecutor observerOn;
     private List<Disposable> disposables = new ArrayList<>();
     private Flowable flowable;
 

@@ -12,4 +12,11 @@ public final class Constants {
     public static final class FragmentTag {
         public static final String MAP_FRAGMENT_TAG = "MAP_FRAGMENT_TAG";
     }
+
+    /**
+     * BroadcastTag
+     */
+    public static final class Broadcast {
+        public static final String BROADCAST_CURRENT_LOCATION = "br.com.smardroid/BROADCAST_CURRENT_LOCATION";
+    }
 }

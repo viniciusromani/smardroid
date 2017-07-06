@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import com.example.viniciusromani.cleanteste.R;
 
-import br.com.smardroid.presentation.view.fragment.map.MapFragment;
+import br.com.smardroid.presentation.view.fragment.home_map.HomeMapFragment;
 import br.com.smardroid.presentation.view.util.Constants;
 
 /**
@@ -33,7 +33,7 @@ public class HomeActivity extends BaseActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        transaction.add(mapContainerId, new MapFragment(), Constants.FragmentTag.MAP_FRAGMENT_TAG);
+        transaction.add(mapContainerId, new HomeMapFragment(), Constants.FragmentTag.MAP_FRAGMENT_TAG);
         transaction.commitNow();
     }
 }

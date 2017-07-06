@@ -1,23 +1,33 @@
-package br.com.smardroid.presentation.view.fragment.map;
+package br.com.smardroid.presentation.view.fragment.home_map;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.app.ActionBar;
 
 import com.example.viniciusromani.cleanteste.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import javax.inject.Inject;
+
+import br.com.smardroid.presentation.presenter.home_map.HomeMapPresenter;
+import br.com.smardroid.presentation.view.HomeMapView;
 import br.com.smardroid.presentation.view.fragment.BaseFragment;
+import br.com.smardroid.presentation.view.util.Constants;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import permissions.dispatcher.NeedsPermission;
@@ -27,12 +37,14 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+import static br.com.smardroid.presentation.view.util.Constants.Broadcast.BROADCAST_CURRENT_LOCATION;
+
 /**
- * Created by viniciusromani on 29/06/17.
+ * Created by viniciusromani on 05/07/17.
  */
 
 @RuntimePermissions
-public class MapFragment extends BaseFragment implements OnMapReadyCallback {
+public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback, HomeMapView {
 
     /**
      * Binds
@@ -41,9 +53,11 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
     protected MapView mapView;
 
     /**
-     * Variable
+     * Variables
      */
     private GoogleMap map;
+    @Inject
+    HomeMapPresenter homeMapPresenter;
 
     /**
      * View life cycle methods
@@ -53,6 +67,10 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         ButterKnife.bind(this, view);
+        getApplicationComponent().inject(this);
+
+        setBroadcastReceiver(BROADCAST_CURRENT_LOCATION).subscribe(this::retrieveCurrentLocation); //, message -> Log.d("HomeMapFragment", "HomeMapFragment " + message));
+
         return view;
     }
 
@@ -78,18 +96,41 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
         map = googleMap;
 
         // Checking permission
-        MapFragmentPermissionsDispatcher.onMapReadyWithCheck(this);
+        HomeMapFragmentPermissionsDispatcher.onMapReadyWithCheck(this);
+
+        // Sending broadcast to get location
+        sendBroadcast(BROADCAST_CURRENT_LOCATION);
     }
 
+    /**
+     * HomeMapView delegate
+     */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        MapFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    public void setCurrentLocation(String location) {
+        Log.d("HomeMapFragment", "Current location " + location);
+    }
+
+    /**
+     * Broadcast methods
+     */
+    private void retrieveCurrentLocation(@Nullable Intent intent) {
+        // Checks if it has permission and if provider is enabled
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (getContext() != null && ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+        }
     }
 
     /**
      * Permission for location
      */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        HomeMapFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
     @NeedsPermission({ Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION })
     void onMapReady() { onMapReadyAfterPermissionChecked(); }
 
