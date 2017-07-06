@@ -2,11 +2,11 @@ package br.com.smardroid.presentation.presenter.home_map;
 
 import android.location.Location;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.google.android.gms.maps.MapView;
-
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import br.com.smardroid.presentation.presenter.BasePresenter;
+import br.com.smardroid.presentation.view.BaseView;
+import io.reactivex.subscribers.DisposableSubscriber;
 
 import javax.inject.Inject;
 
@@ -18,7 +18,7 @@ import br.com.smardroid.presentation.view.HomeMapView;
  * Created by viniciusromani on 05/07/17.
  */
 
-public class HomeMapPresenter {
+public class HomeMapPresenter extends BasePresenter {
 
     protected final HomeMapCase homeMapCase;
     @Nullable
@@ -35,23 +35,23 @@ public class HomeMapPresenter {
     /**
      * Setter
      */
-
+    public void setView(HomeMapView view) {
+        setBaseView(view);
+        this.homeMapView = view;
+    }
 
     /**
      * Business logic
      */
-    private void getUserCurrentLocation(Location lastKnownLocation) {
-        this.homeMapCase.getUserLocation(lastKnownLocation);
+    public void retrieveUserCurrentLocation(Location lastKnownLocation) {
+        this.homeMapCase.retrieveUserLocation(lastKnownLocation);
         this.homeMapCase.execute(new HomeMapPresenter.UserLocationSubscriber());
     }
 
     /**
      * Subscribers
      */
-    private final class UserLocationSubscriber implements Subscriber<CurrentLocation> {
-        @Override
-        public void onSubscribe(Subscription s) { }
-
+    private final class UserLocationSubscriber extends DisposableSubscriber<CurrentLocation> {
         @Override
         public void onComplete() { }
 

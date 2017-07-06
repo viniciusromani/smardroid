@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +28,6 @@ import javax.inject.Inject;
 import br.com.smardroid.presentation.presenter.home_map.HomeMapPresenter;
 import br.com.smardroid.presentation.view.HomeMapView;
 import br.com.smardroid.presentation.view.fragment.BaseFragment;
-import br.com.smardroid.presentation.view.util.Constants;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import permissions.dispatcher.NeedsPermission;
@@ -69,7 +69,9 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
         ButterKnife.bind(this, view);
         getApplicationComponent().inject(this);
 
-        setBroadcastReceiver(BROADCAST_CURRENT_LOCATION).subscribe(this::retrieveCurrentLocation); //, message -> Log.d("HomeMapFragment", "HomeMapFragment " + message));
+        homeMapPresenter.setView(this);
+
+        setBroadcastReceiver(BROADCAST_CURRENT_LOCATION).subscribe(this::retrieveCurrentLocation);//, message -> Log.d("HomeMapFragment", "HomeMapFragment " + message));
 
         return view;
     }
@@ -118,7 +120,10 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (getContext() != null && ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
+            Location lastKnownLocation = new Location("");
+            lastKnownLocation.setLatitude(-22.0166);
+            lastKnownLocation.setLongitude(-47.8971);
+            homeMapPresenter.retrieveUserCurrentLocation(lastKnownLocation);
         }
     }
 

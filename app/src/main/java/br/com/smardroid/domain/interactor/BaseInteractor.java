@@ -9,7 +9,7 @@ import br.com.smardroid.domain.executor.ThreadExecutor;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.disposables.Disposable;
-import org.reactivestreams.Subscriber;
+import io.reactivex.subscribers.DisposableSubscriber;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -43,11 +43,11 @@ public abstract class BaseInteractor {
      * Subscribing methods
      */
     // Subscribe the subscriber to the registered observable
-    public void execute(final Subscriber subscriber) {
+    public void execute(final DisposableSubscriber subscriber) {
         getDisposable(flowable, subscriber);
     }
     // Subscribe the subscriber to the observable
-    public <T> void execute(Flowable<T> flowable, Subscriber<T> subscriber) {
+    public <T> void execute(Flowable<T> flowable, DisposableSubscriber<T> subscriber) {
         getDisposable(flowable, subscriber);
     }
     // Subscribe the onNext action to the observable
@@ -91,7 +91,7 @@ public abstract class BaseInteractor {
         return disposable;
     }
 
-    private <T> void getDisposable(Flowable<T> flowable, final Subscriber<T> subscriber) {
+    private <T> void getDisposable(Flowable<T> flowable, final DisposableSubscriber<T> subscriber) {
 
         flowable.subscribeOn(subscriberOn.getScheduler())
                 .observeOn(observerOn.getScheduler())

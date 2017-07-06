@@ -32,7 +32,7 @@ public class HomeMapCase extends BaseInteractor {
     /**
      * Business logic
      */
-    public Flowable getUserLocation(Location lastKnownLocation) {
-        return withFlowable(googleRepository.getUserCurrentLocation(lastKnownLocation));
+    public Flowable retrieveUserLocation(Location lastKnownLocation) {
+        return withFlowable(googleRepository.retrieveUserCurrentLocation(lastKnownLocation));
     }
 }

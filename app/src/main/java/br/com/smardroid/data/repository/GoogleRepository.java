@@ -3,11 +3,9 @@ package br.com.smardroid.data.repository;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
-import android.location.Address;
 import android.location.Location;
 import android.os.Build;
 
-import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -43,14 +41,11 @@ public class GoogleRepository {
     /**
      * Business logic methods
      */
-    public Flowable<CurrentLocation> getUserCurrentLocation(Location lastKnownLocation) {
-
+    public Flowable<CurrentLocation> retrieveUserCurrentLocation(Location lastKnownLocation) {
+        
         ReactiveLocationProvider locationProvider = new ReactiveLocationProvider(context);
-        Observable<List<Address>> addressesObservable =
-                RxJavaInterop.toV2Observable(locationProvider.getReverseGeocodeObservable(getCurrentLocale(), lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1));
-        Observable<CurrentLocation> locationObservable = addressesObservable.flatMap(addresses -> Observable.just(currentLocationMapper.transform(addresses)));
-
-        return locationObservable.toFlowable(BackpressureStrategy.LATEST);
+        return RxJavaInterop.toV2Flowable(locationProvider.getReverseGeocodeObservable(getCurrentLocale(), lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1)
+                .flatMap(addresses -> rx.Observable.just(currentLocationMapper.transform(addresses))));
     }
 
     /**

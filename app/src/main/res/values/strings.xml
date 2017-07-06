@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CleanTeste</string>
+    <string name="app_name">Smardroid</string>
     <string name="google_map_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBwbUOGsECBfqcqvWeAcTx56-adiKHTTMk</string>
     <!-- Location permission stuff -->
     <string name="permission_location_denied">Allow us to get your location otherwise it would not be possible to set places and its modes on the map.</string>

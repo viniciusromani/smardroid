@@ -13,9 +13,9 @@ public class BasePresenter {
     private BaseView baseView;
 
     /**
-     * Constructor
+     * Setter
      */
-    public BasePresenter(BaseView baseView) {
+    public void setBaseView(BaseView baseView) {
         this.baseView = baseView;
     }
 
