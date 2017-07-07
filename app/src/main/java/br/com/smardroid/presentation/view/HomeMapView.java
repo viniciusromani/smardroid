@@ -5,5 +5,5 @@ package br.com.smardroid.presentation.view;
  */
 
 public interface HomeMapView extends BaseView {
-    void setCurrentLocation(String location);
+    void setAddress(String address);
 }

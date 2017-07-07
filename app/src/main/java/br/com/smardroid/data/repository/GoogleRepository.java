@@ -10,11 +10,9 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import br.com.smardroid.data.mapper.CurrentLocationMapper;
-import br.com.smardroid.domain.entity.current_location.CurrentLocation;
+import br.com.smardroid.data.mapper.current_address.CurrentAddressMapper;
+import br.com.smardroid.domain.entity.current_address.CurrentAddress;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.BackpressureStrategy;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 
@@ -25,7 +23,7 @@ import hu.akarnokd.rxjava.interop.RxJavaInterop;
 public class GoogleRepository {
 
     private final Context context;
-    private final CurrentLocationMapper currentLocationMapper;
+    private final CurrentAddressMapper currentAddressMapper;
     private final Resources resources;
 
     /**
@@ -35,17 +33,17 @@ public class GoogleRepository {
     public GoogleRepository(Context context, Resources resources) {
         this.context = context;
         this.resources = resources;
-        this.currentLocationMapper = new CurrentLocationMapper();
+        this.currentAddressMapper = new CurrentAddressMapper();
     }
 
     /**
      * Business logic methods
      */
-    public Flowable<CurrentLocation> retrieveUserCurrentLocation(Location lastKnownLocation) {
+    public Flowable<CurrentAddress> retrieveAddress(Location location) {
         
         ReactiveLocationProvider locationProvider = new ReactiveLocationProvider(context);
-        return RxJavaInterop.toV2Flowable(locationProvider.getReverseGeocodeObservable(getCurrentLocale(), lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1)
-                .flatMap(addresses -> rx.Observable.just(currentLocationMapper.transform(addresses))));
+        return RxJavaInterop.toV2Flowable(locationProvider.getReverseGeocodeObservable(getCurrentLocale(), location.getLatitude(), location.getLongitude(), 1)
+                .flatMap(addresses -> rx.Observable.just(currentAddressMapper.transform(addresses))));
     }
 
     /**

@@ -71,7 +71,7 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
 
         homeMapPresenter.setView(this);
 
-        setBroadcastReceiver(BROADCAST_CURRENT_LOCATION).subscribe(this::retrieveCurrentLocation);//, message -> Log.d("HomeMapFragment", "HomeMapFragment " + message));
+        setBroadcastReceiver(BROADCAST_CURRENT_LOCATION).subscribe(this::retrieveCurrentLocation, message -> Log.d("HomeMapFragment", "HomeMapFragment " + message));
 
         return view;
     }
@@ -108,8 +108,8 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
      * HomeMapView delegate
      */
     @Override
-    public void setCurrentLocation(String location) {
-        Log.d("HomeMapFragment", "Current location " + location);
+    public void setAddress(String address) {
+        Log.d("HomeMapFragment", "Current location " + address);
     }
 
     /**
@@ -120,10 +120,10 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (getContext() != null && ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Location lastKnownLocation = new Location("");
-            lastKnownLocation.setLatitude(-22.0166);
-            lastKnownLocation.setLongitude(-47.8971);
-            homeMapPresenter.retrieveUserCurrentLocation(lastKnownLocation);
+            Location location = new Location("");
+            location.setLatitude(-22.0166);
+            location.setLongitude(-47.8971);
+            homeMapPresenter.retrieveAddress(location);
         }
     }
 

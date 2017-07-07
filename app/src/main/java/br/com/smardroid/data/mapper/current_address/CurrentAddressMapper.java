@@ -1,27 +1,27 @@
-package br.com.smardroid.data.mapper;
+package br.com.smardroid.data.mapper.current_address;
 
 import android.location.Address;
 import android.util.Log;
 
-import java.util.List;
 import com.annimon.stream.Stream;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
-import br.com.smardroid.domain.entity.current_location.CurrentLocation;
+import br.com.smardroid.domain.entity.current_address.CurrentAddress;
 
 /**
- * Created by viniciusromani on 04/07/17.
+ * Created by viniciusromani on 07/07/17.
  */
 
-public class CurrentLocationMapper {
-
+public class CurrentAddressMapper {
     @Inject
-    public CurrentLocationMapper() {
+    public CurrentAddressMapper() {
         /* Dagger */
     }
 
-    public CurrentLocation transform(List<Address> addresses) {
+    public CurrentAddress transform(List<Address> addresses) {
 
         String cityName = "";
         try {
@@ -29,7 +29,7 @@ public class CurrentLocationMapper {
         } catch (Exception e) {
             Log.d("CurrentLocationMapper", "CurrentLocationMapper - " + e);
         }
-        return CurrentLocation.create()
+        return CurrentAddress.create()
                 .withCityName(cityName);
     }
 }
