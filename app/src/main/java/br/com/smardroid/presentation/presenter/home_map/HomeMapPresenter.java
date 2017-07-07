@@ -41,6 +41,11 @@ public class HomeMapPresenter extends BasePresenter {
     /**
      * Business logic
      */
+    public void retrieveUserLocation() {
+        this.homeMapCase.retrieveUserLocation();
+        this.homeMapCase.execute(new HomeMapPresenter.LocationSubscriber());
+    }
+
     public void retrieveAddress(Location location) {
         this.homeMapCase.retrieveAddress(location);
         this.homeMapCase.execute(new HomeMapPresenter.AddressSubscriber());
@@ -49,6 +54,21 @@ public class HomeMapPresenter extends BasePresenter {
     /**
      * Subscribers
      */
+    private final class LocationSubscriber extends DisposableSubscriber<Location> {
+        @Override
+        public void onComplete() { }
+
+        @Override
+        public void onNext(Location location) {
+            if (homeMapView != null) {
+                homeMapView.updateLocation(location);
+            }
+        }
+
+        @Override
+        public void onError(Throwable t) { }
+    }
+
     private final class AddressSubscriber extends DisposableSubscriber<CurrentAddress> {
         @Override
         public void onComplete() { }

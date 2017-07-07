@@ -39,6 +39,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
     // maps api
     compile 'com.google.android.gms:play-services-maps:11.0.2'
+    // location api
+    compile 'com.google.android.gms:play-services-location:11.0.2'
     // butter knife
     compile 'com.jakewharton:butterknife:8.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'

@@ -19,9 +19,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.viniciusromani.cleanteste.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import javax.inject.Inject;
 
@@ -37,7 +39,9 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+import static br.com.smardroid.presentation.view.util.Constants.Broadcast.BROADCAST_ADDRESS;
 import static br.com.smardroid.presentation.view.util.Constants.Broadcast.BROADCAST_CURRENT_LOCATION;
+import static br.com.smardroid.presentation.view.util.Constants.Map.DEFAULT_ZOOM;
 
 /**
  * Created by viniciusromani on 05/07/17.
@@ -58,6 +62,7 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
     private GoogleMap map;
     @Inject
     HomeMapPresenter homeMapPresenter;
+    private Location currentLocation;
 
     /**
      * View life cycle methods
@@ -71,7 +76,8 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
 
         homeMapPresenter.setView(this);
 
-        setBroadcastReceiver(BROADCAST_CURRENT_LOCATION).subscribe(this::retrieveCurrentLocation, message -> Log.d("HomeMapFragment", "HomeMapFragment " + message));
+        setBroadcastReceiver(BROADCAST_CURRENT_LOCATION).subscribe(this::retrieveCurrentLocation, message -> Log.d("HomeMapFragment", "Location Broadcast " + message));
+        setBroadcastReceiver(BROADCAST_ADDRESS).subscribe(this::retrieveAddress, message -> Log.d("HomeMapFragment", "Address Broadcast " + message));
 
         return view;
     }
@@ -99,17 +105,21 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
 
         // Checking permission
         HomeMapFragmentPermissionsDispatcher.onMapReadyWithCheck(this);
-
-        // Sending broadcast to get location
-        sendBroadcast(BROADCAST_CURRENT_LOCATION);
     }
 
     /**
      * HomeMapView delegate
      */
     @Override
+    public void updateLocation(Location location) {
+        Log.d("HomeMapFragment", "Current location " + location);
+        currentLocation = location;
+        animateToLocation();
+    }
+
+    @Override
     public void setAddress(String address) {
-        Log.d("HomeMapFragment", "Current location " + address);
+        Log.d("HomeMapFragment", "Current address " + address);
     }
 
     /**
@@ -118,8 +128,16 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
     private void retrieveCurrentLocation(@Nullable Intent intent) {
         // Checks if it has permission and if provider is enabled
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (getContext() != null && ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (getContext() != null &&
+                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            homeMapPresenter.retrieveUserLocation();
+        }
+    }
+
+    private void retrieveAddress(Intent intent) {
+        if (homeMapPresenter != null) {
             Location location = new Location("");
             location.setLatitude(-22.0166);
             location.setLongitude(-47.8971);
@@ -189,9 +207,37 @@ public class HomeMapFragment extends BaseFragment implements OnMapReadyCallback,
     private void onMapReadyAfterPermissionChecked() {
         try {
             // map stuff
+            map.getUiSettings().setMyLocationButtonEnabled(true);
             map.setMyLocationEnabled(true);
+            sendBroadcast(BROADCAST_CURRENT_LOCATION);
         } catch (SecurityException se) {
             Log.d("MapFragment", "MapFragment - Security Exception");
         }
     }
+
+    private void animateToLocation() {
+        if (currentLocation != null) {
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM));
+        }
+    }
+
+    /*private void animateToMyLocation() {
+        if (mLastLocation != null && isGpsEnabled()) {
+            animateToLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        } else {
+            animateToDefaultLocation();
+        }
+    }
+
+    private void animateToLatLng(LatLng latLng) {
+        if (myLocationCalledCount >= 2) return;
+
+        myLocationCalledCount++;
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+        if (mLastLocation != null) {
+            mapTabPresenter.getGeomarkers(latLng.latitude, latLng.longitude, mLastLocation.getLatitude(), mLastLocation.getLongitude(), locationType, isGpsEnabled());
+        } else {
+            mapTabPresenter.getGeomarkers(latLng.latitude, latLng.longitude, INVALID_LAT, INVALID_LON, locationType, isGpsEnabled());
+        }
+    }*/
 }

@@ -39,6 +39,12 @@ public class GoogleRepository {
     /**
      * Business logic methods
      */
+    @SuppressWarnings("MissingPermission")
+    public Flowable<Location> retrieveUserLocation() {
+        ReactiveLocationProvider locationProvider = new ReactiveLocationProvider(context);
+        return RxJavaInterop.toV2Flowable(locationProvider.getLastKnownLocation());
+    }
+
     public Flowable<CurrentAddress> retrieveAddress(Location location) {
         
         ReactiveLocationProvider locationProvider = new ReactiveLocationProvider(context);

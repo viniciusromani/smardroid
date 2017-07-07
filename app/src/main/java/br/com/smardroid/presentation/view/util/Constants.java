@@ -18,5 +18,13 @@ public final class Constants {
      */
     public static final class Broadcast {
         public static final String BROADCAST_CURRENT_LOCATION = "br.com.smardroid/BROADCAST_CURRENT_LOCATION";
+        public static final String BROADCAST_ADDRESS = "br.com.smardroid/BROADCAST_ADDRESS";
+    }
+
+    /**
+     * Common constants
+     */
+    public static final class Map {
+        public static final int DEFAULT_ZOOM = 15;
     }
 }
