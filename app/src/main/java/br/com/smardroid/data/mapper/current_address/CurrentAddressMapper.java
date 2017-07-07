@@ -23,13 +23,21 @@ public class CurrentAddressMapper {
 
     public CurrentAddress transform(List<Address> addresses) {
 
+        String countryName = "";
         String cityName = "";
+        String postalCode = "";
+
         try {
+            countryName = Stream.of(addresses).findFirst().get().getCountryName();
             cityName = Stream.of(addresses).findFirst().get().getLocality();
+            postalCode = Stream.of(addresses).findFirst().get().getPostalCode();
         } catch (Exception e) {
             Log.d("CurrentLocationMapper", "CurrentLocationMapper - " + e);
         }
+
         return CurrentAddress.create()
-                .withCityName(cityName);
+                .withCountryName(countryName)
+                .withCityName(cityName)
+                .withPostalCode(postalCode);
     }
 }
